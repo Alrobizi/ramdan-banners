@@ -1,9 +1,19 @@
 {
   "banners": [
-    { "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-1.webp" },
-    { "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-2.webp" },
-    { "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-3.png" },
-    { "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-4.png" },
-    { "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-5.webp" }
+    {
+      "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-1.webp"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-2.webp"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-3.png"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-4.png"
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-5.webp"
+    }
   ]
 }
