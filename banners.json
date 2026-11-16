@@ -1,9 +1,6 @@
 {
   "banners": [
     {
-      "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-2.webp"
-    },
-    {
       "url": "https://cdn.jsdelivr.net/gh/Alrobizi/ramdan-banners@main/banners/banner-3.png"
     },
     {
@@ -16,6 +13,10 @@
     {
       "url": "https://raw.githubusercontent.com/Alrobizi/ramdan-banners/main/banners/banner-1794758045393.webp",
       "download_url": "https://raw.githubusercontent.com/Alrobizi/ramdan-banners/main/banners/banner-1794758045393.webp"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/Alrobizi/ramdan-banners/main/banners/banner-1794865726722.jpeg",
+      "download_url": "https://raw.githubusercontent.com/Alrobizi/ramdan-banners/main/banners/banner-1794865726722.jpeg"
     }
   ]
 }
