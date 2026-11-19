@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مدير البانر — تطبيق رمضان</title>
+<style>
+  :root {
+    --emerald: #0e7a5f;
+    --emerald-light: #10b981;
+    --bg: #0f1a16;
+    --card: #16241f;
+    --border: #24413a;
+    --text: #e8f5f0;
+    --muted: #8db5a8;
+    --danger: #ef4444;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+  h1 { font-size: 1.6rem; margin-bottom: 4px; }
+  .subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+  .card h2 { font-size: 1.05rem; margin-bottom: 14px; color: var(--emerald-light); }
+  label { display: block; font-size: .82rem; color: var(--muted); margin-bottom: 6px; }
+  input[type="text"], input[type="password"], input[type="url"] {
+    width: 100%;
+    background: #0c1512;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 10px 12px;
+    font-size: .9rem;
+    margin-bottom: 12px;
+    direction: ltr;
+    text-align: left;
+  }
+  input:focus { outline: none; border-color: var(--emerald-light); }
+  button {
+    background: var(--emerald);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: .9rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+  }
+  button:hover { background: var(--emerald-light); }
+  button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+  button.secondary:hover { border-color: var(--emerald-light); }
+  button.danger { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 6px 12px; font-size: .8rem; }
+  button.danger:hover { background: var(--danger); color: #fff; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .banner-item {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    background: #0c1512;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .banner-item img {
+    width: 140px; height: 70px;
+    object-fit: cover;
+    border-radius: 6px;
+    background: #1a2b25;
+    flex-shrink: 0;
+  }
+  .banner-item .info { flex: 1; min-width: 0; }
+  .banner-item .info .url {
+    font-size: .75rem; color: var(--muted);
+    direction: ltr; text-align: left;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .banner-item .actions { display: flex; flex-direction: column; gap: 6px; }
+  .banner-item .actions button { padding: 4px 10px; font-size: .78rem; }
+  .status { font-size: .85rem; margin-top: 10px; min-height: 1.2em; }
+  .status.ok { color: var(--emerald-light); }
+  .status.err { color: var(--danger); }
+  .status.info { color: var(--muted); }
+  .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+  .tabs button { font-size: .82rem; }
+  .tabs button.active { background: var(--emerald-light); }
+  .hint { font-size: .78rem; color: var(--muted); line-height: 1.7; margin-top: 8px; }
+  .hint a { color: var(--emerald-light); }
+  #dropZone {
+    border: 2px dashed var(--border);
+    border-radius: 10px;
+    padding: 26px;
+    text-align: center;
+    color: var(--muted);
+    cursor: pointer;
+    margin-bottom: 12px;
+    transition: border-color .15s;
+  }
+  #dropZone:hover, #dropZone.dragover { border-color: var(--emerald-light); color: var(--text); }
+  .empty { color: var(--muted); font-size: .85rem; text-align: center; padding: 16px; }
+  .badge { font-size: .7rem; background: var(--emerald); color: #fff; border-radius: 6px; padding: 2px 8px; }
+  .badge.local { background: #6b7280; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🖼️ مدير البانر</h1>
+  <p class="subtitle">إدارة صور البانر (الغلاف) لتطبيق رمضان — تعديل القائمة يظهر في التطبيق فورًا دون إعادة نشر.</p>
+
+  <!-- الإعدادات -->
+  <div class="card">
+    <h2>🔑 الإعدادات</h2>
+    <label for="pat">رمز الوصول الشخصي لـ GitHub (Personal Access Token) — صلاحيات <b>repo</b> فقط</label>
+    <input type="password" id="pat" placeholder="ghp_..." autocomplete="off">
+    <div class="row">
+      <div style="flex:1">
+        <label for="repo">المستودع</label>
+        <input type="text" id="repo" value="Alrobizi/ramdan-banners">
+      </div>
+      <div style="flex:1">
+        <label for="branch">الفرع</label>
+        <input type="text" id="branch" value="main">
+      </div>
+    </div>
+    <div class="row">
+      <button id="saveSettings">حفظ الإعدادات</button>
+      <button class="secondary" id="loadList">تحميل القائمة الحالية</button>
+    </div>
+    <div class="hint">
+      أنشئ رمز وصول من <a href="https://github.com/settings/tokens?type=beta" target="_blank">GitHub Tokens</a>
+      بصلاحية <b>Contents: Read and write</b> على هذا المستودع فقط. يُحفظ الرمز في متصفحك فقط (localStorage) ولا يُرسل لأي جهة أخرى.
+    </div>
+    <div class="status info" id="settingsStatus"></div>
+  </div>
+
+  <!-- إضافة بانر -->
+  <div class="card">
+    <h2>➕ إضافة بانر جديد</h2>
+    <div class="tabs">
+      <button class="active" id="tabUrl" onclick="switchTab('url')">رابط صورة</button>
+      <button id="tabUpload" onclick="switchTab('upload')">رفع صورة من الجهاز</button>
+    </div>
+
+    <div id="paneUrl">
+      <label for="imgUrl">رابط الصورة (https فقط)</label>
+      <input type="url" id="imgUrl" placeholder="https://example.com/banner.jpg">
+      <button id="addUrl">إضافة</button>
+    </div>
+
+    <div id="paneUpload" style="display:none">
+      <div id="dropZone">اسحب الصورة هنا أو اضغط للاختيار<br><small>(JPG / PNG / WEBP — يُرفع إلى مجلد banners/ في المستودع)</small></div>
+      <input type="file" id="fileInput" accept="image/*" style="display:none">
+      <div class="row" id="uploadPreview" style="display:none">
+        <img id="previewImg" style="width:140px;height:70px;object-fit:cover;border-radius:6px">
+        <span id="previewName" style="font-size:.8rem;color:var(--muted)"></span>
+        <button id="doUpload">رفع وإضافة</button>
+      </div>
+    </div>
+    <div class="status info" id="addStatus"></div>
+  </div>
+
+  <!-- القائمة الحالية -->
+  <div class="card">
+    <h2>📋 القائمة الحالية <span class="badge" id="countBadge">0</span></h2>
+    <div id="bannerList"><div class="empty">اضغط «تحميل القائمة الحالية» للبدء.</div></div>
+    <div class="row" style="margin-top:14px">
+      <button id="saveList" disabled>💾 حفظ القائمة ونشرها</button>
+    </div>
+    <div class="status info" id="listStatus"></div>
+  </div>
+</div>
+
+<script>
+const CONFIG_KEY = 'banner_manager_config';
+const JSON_PATH = 'banners.json';
+const UPLOAD_DIR = 'banners';
+
+let state = {
+  pat: '',
+  repo: 'Alrobizi/ramdan-banners',
+  branch: 'main',
+  banners: [],      // [{url}]
+  jsonSha: null,    // sha of banners.json on GitHub (null = new file)
+  dirty: false,
+};
+
+const $ = (id) => document.getElementById(id);
+
+// ---------- الإعدادات ----------
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(CONFIG_KEY) || '{}');
+    Object.assign(state, saved);
+  } catch (_) {}
+  $('pat').value = state.pat || '';
+  $('repo').value = state.repo;
+  $('branch').value = state.branch;
+}
+$('saveSettings').onclick = () => {
+  state.pat = $('pat').value.trim();
+  state.repo = $('repo').value.trim();
+  state.branch = $('branch').value.trim();
+  localStorage.setItem(CONFIG_KEY, JSON.stringify(state));
+  setStatus('settingsStatus', 'تم حفظ الإعدادات ✓', 'ok');
+};
+
+// ---------- GitHub API ----------
+function apiHeaders() {
+  return {
+    'Authorization': 'Bearer ' + state.pat,
+    'Accept': 'application/vnd.github+json',
+  };
+}
+async function ghGetJson() {
+  const url = `https://api.github.com/repos/${state.repo}/contents/${JSON_PATH}?ref=${state.branch}`;
+  const res = await fetch(url, { headers: apiHeaders() });
+  if (res.status === 404) return { sha: null, banners: [] };
+  if (!res.ok) throw new Error('فشل قراءة banners.json: ' + res.status);
+  const data = await res.json();
+  const content = JSON.parse(atob(data.content.replace(/\n/g, '')));
+  return { sha: data.sha, banners: content.banners || [] };
+}
+async function ghPutJson(banners, message) {
+  const url = `https://api.github.com/repos/${state.repo}/contents/${JSON_PATH}`;
+  const body = {
+    message,
+    branch: state.branch,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify({ banners }, null, 2) + '\n'))),
+  };
+  if (state.jsonSha) body.sha = state.jsonSha;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { ...apiHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error('فشل الحفظ: ' + res.status + ' ' + (await res.text()).slice(0, 200));
+  const data = await res.json();
+  state.jsonSha = data.content.sha;
+}
+async function ghUploadFile(fileName, base64, message) {
+  const path = `${UPLOAD_DIR}/${fileName}`;
+  const url = `https://api.github.com/repos/${state.repo}/contents/${path}`;
+  const res = await fetch(url, {
+    method: 'PUT',
+    headers: { ...apiHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, branch: state.branch, content: base64 }),
+  });
+  if (!res.ok) throw new Error('فشل رفع الصورة: ' + res.status + ' ' + (await res.text()).slice(0, 200));
+  const data = await res.json();
+  return data.content.download_url;
+}
+async function ghFileExists(path) {
+  const res = await fetch(`https://api.github.com/repos/${state.repo}/contents/${path}`, { headers: apiHeaders() });
+  return res.status === 200;
+}
+
+// ---------- القائمة ----------
+$('loadList').onclick = async () => {
+  state.pat = $('pat').value.trim();
+  state.repo = $('repo').value.trim();
+  state.branch = $('branch').value.trim();
+  if (!state.pat) { setStatus('settingsStatus', 'أدخل رمز الوصول أولًا.', 'err'); return; }
+  setStatus('settingsStatus', 'جارٍ التحميل…', 'info');
+  try {
+    const { sha, banners } = await ghGetJson();
+    state.jsonSha = sha;
+    state.banners = banners;
+    state.dirty = false;
+    renderList();
+    setStatus('settingsStatus', 'تم تحميل ' + banners.length + ' بانر ✓', 'ok');
+  } catch (e) {
+    setStatus('settingsStatus', e.message, 'err');
+  }
+};
+
+function isLocalAsset(url) {
+  return url && !/^https?:/i.test(url);
+}
+function renderList() {
+  const list = $('bannerList');
+  $('countBadge').textContent = state.banners.length;
+  $('saveList').disabled = !state.dirty;
+  if (!state.banners.length) {
+    list.innerHTML = '<div class="empty">لا توجد بانرات — أضف أول بانر من الأعلى.</div>';
+    return;
+  }
+  list.innerHTML = '';
+  state.banners.forEach((b, i) => {
+    const url = typeof b === 'string' ? b : b.url;
+    const item = document.createElement('div');
+    item.className = 'banner-item';
+    item.innerHTML = `
+      <img src="${isLocalAsset(url) ? '' : url}" alt="">
+      <div class="info">
+        <div class="url">${url}</div>
+        <div class="row" style="margin-top:6px">
+          <span class="badge ${isLocalAsset(url) ? 'local' : ''}">${isLocalAsset(url) ? 'أصل محلي' : 'شبكة'}</span>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="secondary" onclick="move(${i}, -1)" ${i === 0 ? 'disabled' : ''}>▲</button>
+        <button class="secondary" onclick="move(${i}, 1)" ${i === state.banners.length - 1 ? 'disabled' : ''}>▼</button>
+        <button class="danger" onclick="removeBanner(${i})">حذف</button>
+      </div>`;
+    if (isLocalAsset(url)) item.querySelector('img').style.visibility = 'hidden';
+    list.appendChild(item);
+  });
+}
+function markDirty() {
+  state.dirty = true;
+  $('saveList').disabled = false;
+}
+function move(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= state.banners.length) return;
+  [state.banners[i], state.banners[j]] = [state.banners[j], state.banners[i]];
+  markDirty();
+  renderList();
+}
+function removeBanner(i) {
+  if (!confirm('حذف هذا البانر من القائمة؟')) return;
+  state.banners.splice(i, 1);
+  markDirty();
+  renderList();
+}
+
+$('saveList').onclick = async () => {
+  if (!state.pat) { setStatus('listStatus', 'أدخل رمز الوصول أولًا.', 'err'); return; }
+  setStatus('listStatus', 'جارٍ النشر…', 'info');
+  try {
+    await ghPutJson(state.banners, 'chore: تحديث قائمة البانرات');
+    state.dirty = false;
+    $('saveList').disabled = true;
+    setStatus('listStatus', 'تم النشر ✓ — سيظهر التغيير في التطبيق عند أول تشغيل/فتح للشاشة الرئيسية.', 'ok');
+  } catch (e) {
+    setStatus('listStatus', e.message, 'err');
+  }
+};
+
+// ---------- إضافة بالرابط ----------
+$('addUrl').onclick = () => {
+  const url = $('imgUrl').value.trim();
+  if (!/^https:\/\/.+/.test(url)) { setStatus('addStatus', 'أدخل رابطًا صحيحًا يبدأ بـ https://', 'err'); return; }
+  state.banners.push({ url });
+  markDirty();
+  renderList();
+  $('imgUrl').value = '';
+  setStatus('addStatus', 'أُضيف إلى القائمة — لا تنسَ الضغط على «حفظ القائمة ونشرها».', 'ok');
+};
+
+// ---------- إضافة بالرفع ----------
+function switchTab(tab) {
+  $('paneUrl').style.display = tab === 'url' ? '' : 'none';
+  $('paneUpload').style.display = tab === 'upload' ? '' : 'none';
+  $('tabUrl').classList.toggle('active', tab === 'url');
+  $('tabUpload').classList.toggle('active', tab === 'upload');
+}
+const dropZone = $('dropZone');
+dropZone.onclick = () => $('fileInput').click();
+dropZone.ondragover = (e) => { e.preventDefault(); dropZone.classList.add('dragover'); };
+dropZone.ondragleave = () => dropZone.classList.remove('dragover');
+dropZone.ondrop = (e) => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+};
+$('fileInput').onchange = (e) => { if (e.target.files.length) handleFile(e.target.files[0]); };
+
+let pendingFile = null;
+function handleFile(file) {
+  if (!file.type.startsWith('image/')) { setStatus('addStatus', 'اختر ملف صورة.', 'err'); return; }
+  pendingFile = file;
+  const reader = new FileReader();
+  reader.onload = () => {
+    $('previewImg').src = reader.result;
+    $('previewName').textContent = file.name + ' (' + Math.round(file.size / 1024) + ' KB)';
+    $('uploadPreview').style.display = '';
+    setStatus('addStatus', '');
+  };
+  reader.readAsDataURL(file);
+}
+
+$('doUpload').onclick = async () => {
+  if (!pendingFile) return;
+  if (!state.pat) { setStatus('addStatus', 'أدخل رمز الوصول أولًا.', 'err'); return; }
+  $('doUpload').disabled = true;
+  setStatus('addStatus', 'جارٍ الرفع إلى GitHub…', 'info');
+  try {
+    const dataUrl = await new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result);
+      r.onerror = rej;
+      r.readAsDataURL(pendingFile);
+    });
+    const base64 = dataUrl.split(',')[1];
+    const ext = (pendingFile.name.split('.').pop() || 'png').toLowerCase();
+    const stamp = Date.now();
+    const fileName = `banner-${stamp}.${ext}`;
+    if (await ghFileExists(`${UPLOAD_DIR}/${fileName}`)) {
+      throw new Error('تعارض في اسم الملف، أعد المحاولة.');
+    }
+    const downloadUrl = await ghUploadFile(
+      fileName, base64,
+      'chore: رفع بانر جديد ' + fileName
+    );
+    // رابط raw مستقر للتحميل في التطبيق
+    const rawUrl = `https://raw.githubusercontent.com/${state.repo}/${state.branch}/${UPLOAD_DIR}/${fileName}`;
+    state.banners.push({ url: rawUrl, download_url: downloadUrl });
+    markDirty();
+    renderList();
+    pendingFile = null;
+    $('uploadPreview').style.display = 'none';
+    setStatus('addStatus', 'رُفعت الصورة وأُضيفت للقائمة — لا تنسَ «حفظ القائمة ونشرها».', 'ok');
+  } catch (e) {
+    setStatus('addStatus', e.message, 'err');
+  }
+  $('doUpload').disabled = false;
+};
+
+function setStatus(id, msg, kind) {
+  const el = $(id);
+  el.textContent = msg;
+  el.className = 'status ' + (kind || 'info');
+}
+
+loadSettings();
+</script>
+</body>
+</html>
